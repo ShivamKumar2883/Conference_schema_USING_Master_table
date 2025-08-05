@@ -43,13 +43,6 @@ class JUsersController < ApplicationController
        @user.save!
         @profile.save!
 
-        if params[:j_user][:profile_pic].present?
-          @profile.create_profile_picture!(
-            image_url: params[:j_user][:profile_pic],
-            user_name: params[:j_user][:name]
-          )
-        end
-
 
         @access_token = JWT.encode(
           { user_id: @user.id, exp: 15.minutes.from_now.to_i },

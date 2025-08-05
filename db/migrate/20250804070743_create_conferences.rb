@@ -10,8 +10,11 @@ class CreateConferences < ActiveRecord::Migration[8.0]
       t.string :status, null: false, default: "upcoming"
       t.string :event_url
       t.references :j_user, null: false, foreign_key: true
-            t.references :pocs, null: false, foreign_key: true
-
+      t.references :conference_mode, null: false, foreign_key: true
+      t.references :point_of_contact, null: false, foreign_key: true
+      t.references :conference_component, null: false, foreign_key: true
+      t.references :conference_category, null: false, foreign_key: true
+      t.references :bagdes, null: false, foreign_key: true
 
       t.timestamps
     end

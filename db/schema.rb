@@ -10,7 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_04_091218) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_04_070743) do
+  create_table "bagdes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "badge_type", null: false
+    t.string "badge_name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "conference_categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "conference_components", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "conference_modes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "location_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_id"], name: "index_conference_modes_on_location_id"
+  end
+
   create_table "conferences", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title", null: false
     t.text "description", null: false
@@ -21,10 +48,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_04_091218) do
     t.string "status", default: "upcoming", null: false
     t.string "event_url"
     t.bigint "j_user_id", null: false
+    t.bigint "conference_mode_id", null: false
+    t.bigint "point_of_contact_id", null: false
+    t.bigint "conference_component_id", null: false
+    t.bigint "conference_category_id", null: false
+    t.bigint "bagdes_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["bagdes_id"], name: "index_conferences_on_bagdes_id"
+    t.index ["conference_category_id"], name: "index_conferences_on_conference_category_id"
+    t.index ["conference_component_id"], name: "index_conferences_on_conference_component_id"
+    t.index ["conference_mode_id"], name: "index_conferences_on_conference_mode_id"
     t.index ["end_date"], name: "index_conferences_on_end_date"
     t.index ["j_user_id"], name: "index_conferences_on_j_user_id"
+    t.index ["point_of_contact_id"], name: "index_conferences_on_point_of_contact_id"
     t.index ["start_date"], name: "index_conferences_on_start_date"
     t.index ["status"], name: "index_conferences_on_status"
     t.index ["title"], name: "index_conferences_on_title"
@@ -51,41 +88,44 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_04_091218) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "enquires", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "enquire_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "in_people", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "address", null: false
-    t.string "city", null: false
-    t.string "pincode", null: false
-    t.bigint "conference_id", null: false
-    t.bigint "state_id", null: false
-    t.bigint "district_id", null: false
-    t.index ["conference_id"], name: "index_in_people_on_conference_id"
-    t.index ["district_id"], name: "index_in_people_on_district_id"
-    t.index ["state_id"], name: "index_in_people_on_state_id"
   end
 
   create_table "j_users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email"
     t.string "password"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
   end
 
-  create_table "pocs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "locations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "address", null: false
+    t.string "city", null: false
+    t.string "pincode", null: false
+    t.bigint "state_id", null: false
+    t.bigint "district_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["district_id"], name: "index_locations_on_district_id"
+    t.index ["state_id"], name: "index_locations_on_state_id"
+  end
+
+  create_table "person_details", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "email", null: false
     t.string "phone", null: false
-    t.bigint "conference_id", null: false
-    t.bigint "enquires_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["conference_id"], name: "index_pocs_on_conference_id"
-    t.index ["enquires_id"], name: "index_pocs_on_enquires_id"
+  end
+
+  create_table "point_of_contacts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "enquire_type_id", null: false
+    t.bigint "person_detail_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enquire_type_id"], name: "index_point_of_contacts_on_enquire_type_id"
+    t.index ["person_detail_id"], name: "index_point_of_contacts_on_person_detail_id"
   end
 
   create_table "posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -96,15 +136,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_04_091218) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["j_user_id"], name: "index_posts_on_j_user_id"
-  end
-
-  create_table "profile_pictures", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "profile_id", null: false
-    t.string "image_url"
-    t.string "user_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["profile_id"], name: "index_profile_pictures_on_profile_id"
   end
 
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -122,15 +153,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_04_091218) do
 
   create_table "states", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "conference_modes", "locations"
+  add_foreign_key "conferences", "bagdes", column: "bagdes_id"
+  add_foreign_key "conferences", "conference_categories"
+  add_foreign_key "conferences", "conference_components"
+  add_foreign_key "conferences", "conference_modes"
   add_foreign_key "conferences", "j_users"
-  add_foreign_key "in_people", "conferences"
-  add_foreign_key "in_people", "districts"
-  add_foreign_key "in_people", "states"
-  add_foreign_key "pocs", "conferences"
-  add_foreign_key "pocs", "enquires", column: "enquires_id"
+  add_foreign_key "conferences", "point_of_contacts"
+  add_foreign_key "locations", "districts"
+  add_foreign_key "locations", "states"
+  add_foreign_key "point_of_contacts", "enquire_types"
+  add_foreign_key "point_of_contacts", "person_details"
   add_foreign_key "posts", "j_users"
-  add_foreign_key "profile_pictures", "profiles"
   add_foreign_key "profiles", "j_users"
 end

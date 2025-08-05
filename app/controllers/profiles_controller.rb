@@ -21,19 +21,9 @@ class ProfilesController < ApplicationController
     ))
 
     if params[:profile][:profile_pic].present?
-      if @profile.profile_picture
-        @profile.profile_picture.update!(image_url: params[:profile][:profile_pic])
-      else
-        @profile.create_profile_picture!(
-          image_url: params[:profile][:profile_pic],
-          user_name: @profile.name
-        )
-      end
-
-      if @profile.has_attribute?(:profile_pic)
-        @profile.update_column(:profile_pic, params[:profile][:profile_pic])
-      end
-    end
+      @profile.update(profile_pic: params[:profile][:profile_pic])
+    elsif params[:profile].key?(:profile_pic) && params[:profile][:profile_pic].nil?
+      @profile.update(profile_pic: nil)
 
     respond_to :json
 
